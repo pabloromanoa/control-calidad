@@ -3,5 +3,6 @@ export enum Configuration {
     HOST='HOST',
     USERNAME='USERNAME',
     PASSWORD='PASSWORD',
-    DATABASE='DATABASE'
+    DATABASE='DATABASE',
+    DB_PORT='DB_PORT'
 }
