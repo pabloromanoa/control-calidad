@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JornadaLaboral } from '../jornada-laboral/jornada-laboral.entity';
+import { JornadaLaboralService } from '../jornada-laboral/jornada-laboral.service';
 import { RegistroDefecto } from './registro-defecto.entity';
 import { RegistroDefectoRepository } from './registro-defecto.repository';
 
@@ -8,6 +10,8 @@ export class RegistroDefectoService {
     constructor(
         @InjectRepository(RegistroDefectoRepository)
         private readonly _registroRepository: RegistroDefectoRepository,
+
+        private readonly _jornadaService: JornadaLaboralService,
         
     ){}
 
@@ -37,6 +41,8 @@ export class RegistroDefectoService {
 
     async create(registro: RegistroDefecto): Promise<RegistroDefecto>{
         const savedRegistroDefecto: RegistroDefecto = await this._registroRepository.save(registro);
+
+        await this.validations(savedRegistroDefecto);
         return savedRegistroDefecto;
     }
 
@@ -53,5 +59,19 @@ export class RegistroDefectoService {
         }
 
         await this._registroRepository.delete(id);
+    }
+
+    async validations(registro: RegistroDefecto){
+        if(!registro.hora){
+            throw new BadRequestException('hora debe ser enviado');
+        }
+        if(!registro.pie){
+            throw new BadRequestException('pie debe ser enviado');
+        }
+        const jornada: JornadaLaboral = await this._jornadaService.get(registro.jornada.id_jornada);
+        if(jornada){
+            throw new NotFoundException('jornada ingresada no existe');
+        }
+        
     }
 }
