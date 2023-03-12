@@ -47,9 +47,10 @@ export class OrdenProduccionService {
     }
 
     async create(orden: OrdenProduccion): Promise<OrdenProduccion>{
+        await this.validations(orden);
+        
         const savedOrdenProduccion: OrdenProduccion = await this._ordenProduccionRepository.save(orden);
 
-        await this.validations(savedOrdenProduccion);
         return savedOrdenProduccion;
     }
 
