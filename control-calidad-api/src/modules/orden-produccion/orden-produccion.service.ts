@@ -48,7 +48,7 @@ export class OrdenProduccionService {
 
     async create(orden: OrdenProduccion): Promise<OrdenProduccion>{
         await this.validations(orden);
-        
+
         const savedOrdenProduccion: OrdenProduccion = await this._ordenProduccionRepository.save(orden);
 
         return savedOrdenProduccion;
@@ -89,15 +89,15 @@ export class OrdenProduccionService {
             throw new BadRequestException('linea debe ser enviado');
         }
         const linea: Linea = await this._lineaService.get(orden.linea.id_linea);
-        if(linea){
+        if(!linea){
             throw new NotFoundException('linea ingresada no existe');
         }
         const modelo: Modelo = await this._modeloService.get(orden.modelo.id_modelo);
-        if(modelo){
+        if(!modelo){
             throw new NotFoundException('modelo ingresado no existe');
         }
         const color: Color = await this._colorService.get(orden.color.id_color);
-        if(color){
+        if(!color){
             throw new NotFoundException('color ingresado no existe');
         }
     }
