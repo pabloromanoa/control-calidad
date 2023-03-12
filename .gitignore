@@ -1,6 +1,8 @@
 # compiled output
 control-calidad-api/dist
 control-calidad-api/node_modules
+control-calidad-api/package-lock.json
+
 
 # Logs
 logs
