@@ -40,10 +40,16 @@ export class RegistroDefectoService {
     }
 
     async create(registro: RegistroDefecto): Promise<RegistroDefecto>{
-        const savedRegistroDefecto: RegistroDefecto = await this._registroRepository.save(registro);
+        try{
+            await this.validations(registro);
+    
+            const savedRegistroDefecto: RegistroDefecto = await this._registroRepository.save(registro);
+    
+            return savedRegistroDefecto;
 
-        await this.validations(savedRegistroDefecto);
-        return savedRegistroDefecto;
+        }catch(e){
+            console.error(e.message);
+        }
     }
 
     async update(id: number, registro: RegistroDefecto): Promise<void>{
@@ -61,15 +67,15 @@ export class RegistroDefectoService {
         await this._registroRepository.delete(id);
     }
 
-    async validations(registro: RegistroDefecto){
+    async validations(registro: any){
         if(!registro.hora){
             throw new BadRequestException('hora debe ser enviado');
         }
         if(!registro.pie){
             throw new BadRequestException('pie debe ser enviado');
         }
-        const jornada: JornadaLaboral = await this._jornadaService.get(registro.jornada.id_jornada);
-        if(jornada){
+        const jornada: JornadaLaboral = await this._jornadaService.get(registro.jornadaIdJornada);
+        if(!jornada){
             throw new NotFoundException('jornada ingresada no existe');
         }
         

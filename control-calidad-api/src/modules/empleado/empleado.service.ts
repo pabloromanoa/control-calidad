@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JornadaLaboral } from '../jornada-laboral/jornada-laboral.entity';
+import { JornadaLaboralService } from '../jornada-laboral/jornada-laboral.service';
 import { Empleado } from './empleado.entity';
 import { EmpleadoRepository } from './empleado.repository';
 
@@ -8,6 +10,8 @@ export class EmpleadoService {
     constructor(
         @InjectRepository(EmpleadoRepository)
         private readonly _empleadoRepository: EmpleadoRepository,
+
+        private readonly _jornadaService: JornadaLaboralService,
         
     ){}
 
@@ -36,8 +40,15 @@ export class EmpleadoService {
     }
 
     async create(empleado: Empleado): Promise<Empleado>{
-        const savedEmpleado: Empleado = await this._empleadoRepository.save(empleado);
-        return savedEmpleado;
+        try{
+            await this.validations(empleado);
+    
+            const savedEmpleado: Empleado = await this._empleadoRepository.save(empleado);
+            return savedEmpleado;
+
+        }catch(e){
+            console.error(e.message);
+        }
     }
 
     async update(id: number, empleado: Empleado): Promise<void>{
@@ -53,5 +64,25 @@ export class EmpleadoService {
         }
 
         await this._empleadoRepository.delete(id);
+    }
+
+    async validations(empleado: any){
+        if(!empleado.nombre){
+            throw new BadRequestException('nombre debe ser enviado');
+        }
+        if(!empleado.apellido){
+            throw new BadRequestException('apellido debe ser enviado');
+        }
+        if(!empleado.dni){
+            throw new BadRequestException('dni debe ser enviado');
+        }
+        if(!empleado.mail){
+            throw new BadRequestException('mail debe ser enviado');
+        }
+        
+        const jornada: JornadaLaboral = await this._jornadaService.get(empleado.jornadaIdJornada);
+        if(!jornada){
+            throw new NotFoundException('jornada ingresado no existe');
+        }
     }
 }

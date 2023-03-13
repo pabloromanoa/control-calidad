@@ -36,8 +36,15 @@ export class LineaService {
     }
 
     async create(linea: Linea): Promise<Linea>{
-        const savedLinea: Linea = await this._lineaRepository.save(linea);
-        return savedLinea;
+        try{
+            await this.validations(linea);
+    
+            const savedLinea: Linea = await this._lineaRepository.save(linea);
+            return savedLinea;
+
+        }catch(e){
+            console.error(e.message);
+        }
     }
 
     async update(id: number, linea: Linea): Promise<void>{
@@ -53,5 +60,15 @@ export class LineaService {
         }
 
         await this._lineaRepository.delete(id);
+    }
+
+    async validations(linea: any){
+        if(!linea.numero){
+            throw new BadRequestException('numero debe ser enviado');
+        }
+        if(!linea.descripcion){
+            throw new BadRequestException('descripcion debe ser enviado');
+        }
+        
     }
 }

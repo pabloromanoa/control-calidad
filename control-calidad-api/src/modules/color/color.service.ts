@@ -36,8 +36,16 @@ export class ColorService {
     }
 
     async create(color: Color): Promise<Color>{
-        const savedColor: Color = await this._colorRepository.save(color);
-        return savedColor;
+        try{
+            await this.validations(color);
+    
+            const savedColor: Color = await this._colorRepository.save(color);
+    
+            return savedColor;
+            
+        }catch(e){
+            console.error(e.message);
+        }
     }
 
     async update(id: number, color: Color): Promise<void>{
@@ -53,5 +61,15 @@ export class ColorService {
         }
 
         await this._colorRepository.delete(id);
+    }
+
+    async validations(color: any){
+        if(!color.codigo){
+            throw new BadRequestException('codigo debe ser enviado');
+        }
+        if(!color.descripcion){
+            throw new BadRequestException('descripcion debe ser enviado');
+        }
+        
     }
 }

@@ -47,11 +47,16 @@ export class OrdenProduccionService {
     }
 
     async create(orden: OrdenProduccion): Promise<OrdenProduccion>{
-        await this.validations(orden);
+        try{
+            await this.validations(orden);
+    
+            const savedOrdenProduccion: OrdenProduccion = await this._ordenProduccionRepository.save(orden);
+    
+            return savedOrdenProduccion;
 
-        const savedOrdenProduccion: OrdenProduccion = await this._ordenProduccionRepository.save(orden);
-
-        return savedOrdenProduccion;
+        }catch(e){
+            console.error(e.message);
+        }
     }
 
     async update(id: number, orden: OrdenProduccion): Promise<void>{
@@ -69,9 +74,13 @@ export class OrdenProduccionService {
         await this._ordenProduccionRepository.delete(id);
     }
 
-    async validations(orden: OrdenProduccion){
+    async validations(orden: any){
         if(!orden.numero){
             throw new BadRequestException('numero debe ser enviado');
+        }
+        const num = this.get(orden.numero);
+        if(orden.numero == num){
+            throw new BadRequestException('El numero ingresado ya existe');
         }
         if(!orden.inicio){
             throw new BadRequestException('inicio debe ser enviado');
@@ -79,24 +88,24 @@ export class OrdenProduccionService {
         if(!orden.fin){
             throw new BadRequestException('fin debe ser enviado');
         }
-        if(!orden.modelo){
+        if(!orden.modeloIdModelo){
             throw new BadRequestException('modelo debe ser enviado');
         }
-        if(!orden.color){
+        if(!orden.colorIdColor){
             throw new BadRequestException('color debe ser enviado');
         }
-        if(!orden.linea){
+        if(!orden.lineaIdLinea){
             throw new BadRequestException('linea debe ser enviado');
         }
-        const linea: Linea = await this._lineaService.get(orden.linea.id_linea);
+        const linea: Linea = await this._lineaService.get(orden.lineaIdLinea);
         if(!linea){
             throw new NotFoundException('linea ingresada no existe');
         }
-        const modelo: Modelo = await this._modeloService.get(orden.modelo.id_modelo);
+        const modelo: Modelo = await this._modeloService.get(orden.modeloIdModelo);
         if(!modelo){
             throw new NotFoundException('modelo ingresado no existe');
         }
-        const color: Color = await this._colorService.get(orden.color.id_color);
+        const color: Color = await this._colorService.get(orden.colorIdColor);
         if(!color){
             throw new NotFoundException('color ingresado no existe');
         }

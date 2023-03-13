@@ -36,8 +36,13 @@ export class ModeloService {
     }
 
     async create(modelo: Modelo): Promise<Modelo>{
-        const savedModelo: Modelo = await this._modeloRepository.save(modelo);
-        return savedModelo;
+        try{
+            await this.validations(modelo);
+            const savedModelo: Modelo = await this._modeloRepository.save(modelo);
+            return savedModelo;         
+        }catch(e){
+            console.error(e.message);
+        }
     }
 
     async update(id: number, modelo: Modelo): Promise<void>{
@@ -53,5 +58,27 @@ export class ModeloService {
         }
 
         await this._modeloRepository.delete(id);
+    }
+
+    async validations(modelo: any){
+        if(!modelo.sku){
+            throw new BadRequestException('sku debe ser enviado');
+        }
+        if(!modelo.descripcion){
+            throw new BadRequestException('descripcion debe ser enviado');
+        }
+        if(!modelo.limite_inferior_observable){
+            throw new BadRequestException('limite_inferior_observable debe ser enviado');
+        }
+        if(!modelo.limite_inferior_reproceso){
+            throw new BadRequestException('limite_inferior_reproceso debe ser enviado');
+        }
+        if(!modelo.limite_superior_observable){
+            throw new BadRequestException('limite_superior_observable debe ser enviado');
+        }
+        if(!modelo.limite_superior_reproceso){
+            throw new BadRequestException('limite_superior_reproceso debe ser enviado');
+        }
+        
     }
 }

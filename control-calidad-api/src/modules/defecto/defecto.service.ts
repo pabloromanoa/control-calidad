@@ -36,8 +36,14 @@ export class DefectoService {
     }
 
     async create(defecto: Defecto): Promise<Defecto>{
-        const savedDefecto: Defecto = await this._defectoRepository.save(defecto);
-        return savedDefecto;
+        try{
+            await this.validations(defecto);
+            const savedDefecto: Defecto = await this._defectoRepository.save(defecto);
+            return savedDefecto;
+
+        }catch(e){
+            console.error(e.message);
+        }
     }
 
     async update(id: number, defecto: Defecto): Promise<void>{
@@ -53,5 +59,15 @@ export class DefectoService {
         }
 
         await this._defectoRepository.delete(id);
+    }
+
+    async validations(defecto: any){
+        if(!defecto.tipo){
+            throw new BadRequestException('tipo debe ser enviado');
+        }
+        if(!defecto.descripcion){
+            throw new BadRequestException('descripcion debe ser enviado');
+        }
+        
     }
 }
