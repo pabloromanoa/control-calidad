@@ -72,25 +72,12 @@ export class LineaService {
         
     }
 
-    async validarlineasocupadas(): Promise<Boolean> {
+    async getLineasDisp(): Promise<Linea[]> {
 
         const lineas: Linea[] = await this.getAll();
-        var ocupada: boolean = false;
-        var cantOcup: number = 0;
-        (await lineas).forEach(l => {
-            ocupada = false;
-            l.ordenes.forEach(o => {
-                if (o.estado == "INICIADA") {
-                    ocupada = true;
-                }
-            })
-            if (ocupada) cantOcup++;
-        })
-        if (cantOcup == lineas.length) {
-            return false;
-        } else {
-            return true;
-        }
+        var lineasDisp: Linea[] = lineas.filter(l => !l.ordenes.filter(o => o.estado == "INICIADA"));
+
+        return lineasDisp;
 
     }
     
