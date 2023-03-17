@@ -28,13 +28,13 @@ export class JornadaLaboral extends BaseEntity{
     @Column({type: 'timestamp', nullable: false})
     fecha_fin: Date;
 
-    @Column({type: 'integer', nullable: false})
+    @Column({type: 'integer', nullable: false, default: 0})
     total_primera: number;
 
-    @Column({type: 'integer', nullable: false})
+    @Column({type: 'integer', nullable: false, default: 0})
     total_segunda: number;
 
-    @Column({type: 'integer', nullable: false})
+    @Column({type: 'integer', nullable: false, default: 0})
     total_hermanado: number;
 
 }
