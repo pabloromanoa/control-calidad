@@ -19,6 +19,12 @@ export class LineaController {
             return lineas;
         }
 
+        @Get('validar-ocupadas')
+        async getValidacionLineas(): Promise<Boolean>{
+            const validacion: Boolean = await this._lineaService.validarlineasocupadas();
+            return validacion;
+        }
+
         @Post()
         async createLinea(@Body() linea: Linea): Promise<Linea>{
            const createdLinea = await this._lineaService.create(linea);

@@ -44,7 +44,7 @@ export class OrdenProduccion extends BaseEntity{
     @Column({type: 'integer', nullable: false})
     fin: number;
     
-    @Column({type: 'text', nullable: true})
+    @Column({type: 'text', nullable: true, default: 'INICIADA'})
     estado: Estado;
 
 
